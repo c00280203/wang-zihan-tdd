@@ -1,5 +1,5 @@
 package test;
-// import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -48,5 +48,20 @@ public class CalculatorTest {
         Calculator calculator = new Calculator();
         int result = calculator.multiply(a, b);
         assertEquals(expected, result);
+    }
+
+    @Test
+    public void testDivide() {
+        Calculator calculator = new Calculator();
+        int result = calculator.divide(10, 2);
+        assertEquals(5, result);
+    }
+
+    @Test
+    public void testDivideByZeroThrowsException() {
+        Calculator calculator = new Calculator();
+        assertThrows(IllegalArgumentException.class, () -> {
+            calculator.divide(10, 0);
+        });
     }
 }
