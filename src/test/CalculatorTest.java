@@ -1,5 +1,5 @@
 package test;
-import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -22,10 +22,17 @@ public class CalculatorTest {
         assertEquals(expected, result);
     }
 
-    @Test
-    public void testSubtract() {
+    @ParameterizedTest
+    @CsvSource({
+        "5, 3, 2",
+        "0, 0, 0",
+        "1, 1, 0",
+        "-1, -1, 0",
+        "10, 15, -5"
+    })
+    public void testSubtract(int a, int b, int expected) {
         Calculator calculator = new Calculator();
-        int result = calculator.subtract(5, 3);
-        assertEquals(2, result);
+        int result = calculator.subtract(a, b);
+        assertEquals(expected, result);
     }
 }
