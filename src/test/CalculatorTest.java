@@ -57,11 +57,30 @@ public class CalculatorTest {
         assertEquals(5, result);
     }
 
-    @Test
-    public void testDivideByZeroThrowsException() {
+    @ParameterizedTest
+    @CsvSource({
+        "10, 2, 5",
+        "0, 5, 0",
+        "15, 3, 5",
+        "-10, 2, -5",
+        "-20, -4, 5"
+    })
+    public void testDivide(int a, int b, int expected) {
+        Calculator calculator = new Calculator();
+        int result = calculator.divide(a, b);
+        assertEquals(expected, result);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "10, 0",
+        "0, 0",
+        "-5, 0"
+    })
+    public void testDivideByZeroThrowsException(int a, int b) {
         Calculator calculator = new Calculator();
         assertThrows(IllegalArgumentException.class, () -> {
-            calculator.divide(10, 0);
+            calculator.divide(a, b);
         });
     }
 }
