@@ -61,4 +61,15 @@ public class ReservationServiceTest {
         () -> reservationService.reserve(user.getId(), stockBook.getId()));
         assertEquals("No copies available for book: " + stockBook.getId(), exception.getMessage());
     }
+
+    @Test
+    public void reserveBook_UserAlreadyReserved_ThrowsException() {
+        // Given
+        reservationService.reserve(user.getId(), books.getId());
+        
+        // When & Then
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> reservationService.reserve(user.getId(), books.getId()));
+        assertEquals("User already reserved this book", exception.getMessage());
+    }
 }
