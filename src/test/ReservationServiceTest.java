@@ -25,6 +25,7 @@ public class ReservationServiceTest {
     private Book books;
     private User user;
     private Book stockBook;
+    private User user02;
 
     @Before
     public void setUp() {
@@ -39,6 +40,8 @@ public class ReservationServiceTest {
 
         stockBook = new Book("Book002", "I prefer C++", 0);
         bookRepo.save(stockBook);
+
+        user02 = new User("C00280204", "Handsome Man");
     }
 
     @Test
@@ -111,5 +114,18 @@ public class ReservationServiceTest {
         assertEquals(1, reservations.size());
         assertEquals(books.getId(), reservations.get(0).getBookId());
         assertEquals(user.getId(), reservations.get(0).getUserId());
+    }
+
+    @Test
+    public void listReservationsForBook_ReturnsBookReservations() {
+        // Given
+        reservationService.reserve(user.getId(), books.getId());
+        reservationService.reserve(user02.getId(), books.getId());
+        
+        // When
+        List<Reservation> reservations = reservationService.listReservationsForBook(books.getId());
+        
+        // Then - This will fail initially as listReservationsForBook method is not implemented
+        assertEquals(2, reservations.size());
     }
 }
