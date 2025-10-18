@@ -40,7 +40,8 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void reserveBook_BookNotFound_ThrowsException() {
+    public void reserveBook_BookNotFound_ThrowsException() {
+        setUp();
         // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> reservationService.reserve(user.getId(), "NON_EXISTENT"));
