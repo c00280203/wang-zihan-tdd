@@ -62,6 +62,8 @@ public class ReservationService {
 
     public List<Reservation> listReservationsForBook(String bookId) {
         // TODO: Implement using TDD
-        return null;
+        return reservationRepo.findAll().stream()
+        .filter(reservation -> reservation.getBookId().equals(bookId))
+        .collect(Collectors.toList());
     }
 }
