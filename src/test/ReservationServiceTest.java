@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.Test;
 
@@ -36,5 +37,13 @@ public class ReservationServiceTest {
         reservationService.reserve(user.getId(), books.getId());
         Book book = bookRepo.findById(books.getId());
         assertEquals(2, book.getCopiesAvailable());
+    }
+
+    @Test
+    void reserveBook_BookNotFound_ThrowsException() {
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> reservationService.reserve(user.getId(), "NON_EXISTENT"));
+        assertEquals("Book not found", exception.getMessage());
     }
 }
