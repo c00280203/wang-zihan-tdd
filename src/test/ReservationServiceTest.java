@@ -11,6 +11,7 @@ import main.IBookRepository;
 import main.IReservationRepository;
 import main.MemoryBookRepository;
 import main.MemoryReservationRepository;
+import main.NoAvailableCopiesException;
 import main.ReservationService;
 
 public class ReservationServiceTest {
@@ -19,6 +20,7 @@ public class ReservationServiceTest {
     private IReservationRepository reservationRepo;
     private Book books;
     private User user;
+    private Book stockBook;
 
     public void setUp() {
         bookRepo = new MemoryBookRepository();
@@ -29,6 +31,9 @@ public class ReservationServiceTest {
         user = new User("C00280203", "Zihan Wang");
 
         bookRepo.save(books);
+
+        stockBook = new Book("Book002", "I prefer C++", 0);
+        bookRepo.save(stockBook);
     }
 
     @Test
@@ -48,4 +53,10 @@ public class ReservationServiceTest {
         assertEquals("Book not found", exception.getMessage());
     }
 
+    @Test
+    public void reserveBook_NoCopiesAvailable_ThrowsException() {
+        NoAvailableCopiesException exception = assertThrows(NoAvailableCopiesException.class,
+        () -> reservationService.reserve(user.getId(), stockBook.getId()));
+        assertEquals("No copies available for book: " + stockBook.getId(), exception.getMessage());
+    }
 }
