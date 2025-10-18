@@ -12,17 +12,16 @@ import main.MemoryBookRepository;
 import main.MemoryReservationRepository;
 import main.ReservationService;
 
-
 public class ReservationServiceTest {
     private ReservationService reservationService;
-    private IBookRepository iBookRepository;
-    private IReservationRepository iReservationRepository;
+    private IBookRepository bookRepo;
+    private IReservationRepository reservationRepo;
     private Book books;
     private User user;
 
-    void setUp() {
+    public void setUp() {
         bookRepo = new MemoryBookRepository();
-        reservationRepo = new MemoryBookRepository();
+        reservationRepo = new MemoryReservationRepository();
         reservationService = new ReservationService(bookRepo, reservationRepo);
 
         books = new Book("Book001", "I love Java", 3);
@@ -32,9 +31,10 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void reserveBook() {
-        reservationService.reserve(user.getId(), book.getId());
-        Book book = bookRepo.findById(books.getId().orElseThrow());
+    public void reserveBook() {
+        setUp();
+        reservationService.reserve(user.getId(), books.getId());
+        Book book = bookRepo.findById(books.getId());
         assertEquals(2, book.getCopiesAvailable());
     }
 }

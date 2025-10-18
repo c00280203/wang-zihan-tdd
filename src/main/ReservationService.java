@@ -18,6 +18,12 @@ public class ReservationService {
      */
     public void reserve(String userId, String bookId) {
         // TODO: Implement using TDD
+        Book book = bookRepo.findById(bookId);
+        book.setCopiesAvailable(book.getCopiesAvailable() - 1);
+        bookRepo.save(book);
+
+        Reservation reservation = new Reservation(userId, bookId);
+        reservationRepo.save(reservation);
     }
 
     /**
