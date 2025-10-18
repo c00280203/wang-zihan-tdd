@@ -87,4 +87,12 @@ public class ReservationServiceTest {
         Book bookAfterCancel = bookRepo.findById(books.getId());
         assertEquals(3, bookAfterCancel.getCopiesAvailable());
     }
+
+    @Test
+    public void cancelReservation_NonExistentReservation_ThrowsException() {
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> reservationService.cancel(user.getId(), books.getId()));
+        assertEquals("Reservation not found", exception.getMessage());
+    }
 }
