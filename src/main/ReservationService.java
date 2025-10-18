@@ -1,6 +1,7 @@
 package main;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReservationService {
     private final IBookRepository bookRepo;
@@ -54,7 +55,9 @@ public class ReservationService {
 
     public List<Reservation> listReservations(String userId) {
         // TODO: Implement using TDD
-        return null;
+        return reservationRepo.findAll().stream()
+        .filter(reservation -> reservation.getUserId().equals(userId))
+        .collect(Collectors.toList());
     }
 
     public List<Reservation> listReservationsForBook(String bookId) {
