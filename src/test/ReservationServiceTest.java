@@ -3,6 +3,8 @@ package test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,6 +15,7 @@ import main.IReservationRepository;
 import main.MemoryBookRepository;
 import main.MemoryReservationRepository;
 import main.NoAvailableCopiesException;
+import main.Reservation;
 import main.ReservationService;
 
 public class ReservationServiceTest {
@@ -94,5 +97,19 @@ public class ReservationServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> reservationService.cancel(user.getId(), books.getId()));
         assertEquals("Reservation not found", exception.getMessage());
+    }
+
+    @Test
+    public void listReservations_ReturnsUserReservations() {
+        // Given
+        reservationService.reserve(user.getId(), books.getId());
+        
+        // When
+        List<Reservation> reservations = reservationService.listReservations(user.getId());
+        
+        // Then - This will fail initially as listReservations method is not implemented
+        assertEquals(1, reservations.size());
+        assertEquals(books.getId(), reservations.get(0).getBookId());
+        assertEquals(user.getId(), reservations.get(0).getUserId());
     }
 }
