@@ -3,6 +3,7 @@ package test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import main.Book;
@@ -22,6 +23,7 @@ public class ReservationServiceTest {
     private User user;
     private Book stockBook;
 
+    @Before
     public void setUp() {
         bookRepo = new MemoryBookRepository();
         reservationRepo = new MemoryReservationRepository();
