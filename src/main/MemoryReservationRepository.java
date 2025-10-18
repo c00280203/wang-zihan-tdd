@@ -3,7 +3,7 @@ package main;
 import java.util.*;
 
 public class MemoryReservationRepository implements IReservationRepository {
-    private final List<Reservation> reservations = new ArrayList<>();
+    private final Set<Reservation> reservations = new HashSet<>();
 
     @Override
     public void save(Reservation reservation) {
@@ -11,23 +11,12 @@ public class MemoryReservationRepository implements IReservationRepository {
     }
 
     @Override
-    public boolean existsByUserAndBook(String userId, String bookId) {
-        return reservations.stream()
-                .anyMatch(r -> r.getUserId().equals(userId)
-                        && r.getBookId().equals(bookId));
+    public void delete(Reservation reservation) {
+        reservations.remove(reservation);
     }
 
     @Override
-    public List<Reservation> findByUser(String userId) {
-        return reservations.stream()
-                .filter(r -> r.getUserId().equals(userId))
-                .toList();
-    }
-
-    @Override
-    public void delete(String userId, String bookId) {
-        reservations.removeIf(r ->
-            r.getUserId().equals(userId) && r.getBookId().equals(bookId));
+    public List<Reservation> findAll() {
+        return new ArrayList<>(reservations);
     }
 }
-

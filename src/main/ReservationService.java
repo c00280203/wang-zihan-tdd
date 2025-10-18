@@ -11,14 +11,26 @@ public class ReservationService {
         this.reservationRepo = reservationRepo;
     }
 
-    /**
-     * Reserve a book for a user.
-     * Throws IllegalArgumentException if book not found.
-     * Throws IllegalStateException if no copies available or user already reserved.
-     */
     public void reserve(String userId, String bookId) {
-        // TODO: Implement using TDD
         Book book = bookRepo.findById(bookId);
+        
+        if (book == null) {
+            throw new IllegalArgumentException("Book not found");
+        }
+
+        // Check if copies available
+        if (book.getCopiesAvailable() <= 0) {
+            throw new NoAvailableCopiesException("No copies available for book: " + bookId);
+        }
+
+        // Check if user already reserved this book
+        List<Reservation> allReservations = reservationRepo.findAll();
+        for (Reservation reservation : allReservations) {
+            if (reservation.getUserId().equals(userId) && reservation.getBookId().equals(bookId)) {
+                throw new IllegalStateException("User already reserved this book");
+            }
+        }
+
         book.setCopiesAvailable(book.getCopiesAvailable() - 1);
         bookRepo.save(book);
 
@@ -26,28 +38,17 @@ public class ReservationService {
         reservationRepo.save(reservation);
     }
 
-    /**
-     * Cancel an existing reservation for a user.
-     * Throws IllegalArgumentException if no such reservation exists.
-     */
     public void cancel(String userId, String bookId) {
         // TODO: Implement using TDD
     }
 
-    /**
-     * List all active reservations for a given user.
-     */
     public List<Reservation> listReservations(String userId) {
         // TODO: Implement using TDD
         return null;
     }
 
-    /**
-     * list all reservations for a book.
-     */
     public List<Reservation> listReservationsForBook(String bookId) {
         // TODO: Implement using TDD
         return null;
     }
-
 }
