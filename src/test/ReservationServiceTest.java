@@ -128,4 +128,22 @@ public class ReservationServiceTest {
         // Then - This will fail initially as listReservationsForBook method is not implemented
         assertEquals(2, reservations.size());
     }
+
+    @Test
+    public void reserveLastCopy_Successful() {
+        // Given
+        Book lastCopyBook = new Book("B003", "Last Copy Book", 1);
+        bookRepo.save(lastCopyBook);
+        
+        // When
+        reservationService.reserve(user.getId(), lastCopyBook.getId());
+        
+        // Then
+        Book book = bookRepo.findById(lastCopyBook.getId());
+        assertEquals(0, book.getCopiesAvailable());
+        
+        // Verify no more copies available
+        NoAvailableCopiesException exception = assertThrows(NoAvailableCopiesException.class,
+            () -> reservationService.reserve(user02.getId(), lastCopyBook.getId()));
+    }
 }
