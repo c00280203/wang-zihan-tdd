@@ -72,4 +72,19 @@ public class ReservationServiceTest {
             () -> reservationService.reserve(user.getId(), books.getId()));
         assertEquals("User already reserved this book", exception.getMessage());
     }
+
+    @Test
+    void cancelReservation_SuccessfulCancellation() {
+        // Given
+        reservationService.reserve(user.getId(), books.getId());
+        Book bookBeforeCancel = bookRepo.findById(books.getId());
+        assertEquals(2, bookBeforeCancel.getCopiesAvailable());
+        
+        // When
+        reservationService.cancel(user.getId(), books.getId());
+        
+        // Then - This will fail initially as cancel method is not implemented
+        Book bookAfterCancel = bookRepo.findById(books.getId());
+        assertEquals(3, bookAfterCancel.getCopiesAvailable());
+    }
 }
