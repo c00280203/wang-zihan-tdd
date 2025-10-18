@@ -40,6 +40,16 @@ public class ReservationService {
 
     public void cancel(String userId, String bookId) {
         // TODO: Implement using TDD
+        Reservation reservation = new Reservation(userId, bookId);
+
+        if (!reservationRepo.findAll().contains(reservation)) {
+            throw new IllegalArgumentException("Reservation not found");
+        }
+        reservationRepo.delete(reservation);
+
+        Book book = bookRepo.findById(bookId);
+        book.setCopiesAvailable(book.getCopiesAvailable() + 1);
+        bookRepo.save(book);
     }
 
     public List<Reservation> listReservations(String userId) {
