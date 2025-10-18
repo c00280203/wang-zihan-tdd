@@ -47,4 +47,5 @@ public class ReservationServiceTest {
             () -> reservationService.reserve(user.getId(), "NON_EXISTENT"));
         assertEquals("Book not found", exception.getMessage());
     }
+
 }
