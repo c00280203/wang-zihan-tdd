@@ -74,7 +74,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void cancelReservation_SuccessfulCancellation() {
+    public void cancelReservation_SuccessfulCancellation() {
         // Given
         reservationService.reserve(user.getId(), books.getId());
         Book bookBeforeCancel = bookRepo.findById(books.getId());
