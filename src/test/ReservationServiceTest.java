@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
@@ -176,7 +177,7 @@ public class ReservationServiceTest {
         Book outBook = new Book("Book005", "Penguin City Survival Guide", 0);
 
         bookRepo.save(outBook);
-        
+
         reservationService.reserve(prioUser01.getId(), outBook.getId());
         reservationService.reserve(prioUser02.getId(), outBook.getId());
 
@@ -184,5 +185,25 @@ public class ReservationServiceTest {
         assertEquals(2, waitingList.size());
         assertEquals(prioUser01.getId(), waitingList.get(0).getUserId());
         assertEquals(prioUser02.getId(), waitingList.get(1).getUserId());
+    }
+
+    @Test
+    public void cancelReservation_FirstInWaitingList() {
+        User prioUser = new User("P00000001", "Prio User", true);
+        User reguUser = new User("R00000001", "Regu User", false);
+        Book book = new Book("Book006", "How to Fire your Boss", 1);
+        bookRepo.save(book);
+
+        reservationService.reserve(reguUser.getId(), book.getId());
+        assertEquals(0, book.getCopiesAvailable());
+
+        reservationService.reserve(prioUser.getId(), book.getId());
+        assertEquals(1,reservationService.getWaitingList(book.getId()).size());
+
+        reservationService.reserve(prioUser.getId(), book.getId());
+
+        assertEquals(0, reservationService.getWaitingList(book.getId()).size());
+        assertTrue(reservationRepo.existsByUserAndBook(prioUser.getId(), book.getId()));
+        assertEquals(0, book.getCopiesAvailable());
     }
 }
