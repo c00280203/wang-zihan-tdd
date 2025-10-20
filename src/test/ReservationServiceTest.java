@@ -146,4 +146,17 @@ public class ReservationServiceTest {
         NoAvailableCopiesException exception = assertThrows(NoAvailableCopiesException.class,
             () -> reservationService.reserve(user02.getId(), lastCopyBook.getId()));
     }
+
+    @Test
+    public void reserveBook_PriorityUser_CanReserveWhenNoCopiesAvailable() {
+        User prioUser = new User("C00288344", "Handsome Melka");
+        Book outOfStockBook = new Book("Book003", "How to get rich women's heart", 0);
+        bookRepo.save(outOfStockBook);
+
+        reservationService.reserve(prioUser.getId(), outOfStockBook.getId());
+
+        List<Reservation> waitingList = reservationService.getWaitingList(outOfStockBook.getId());
+        assertEquals(1, waitingList.size());
+        assertEquals(prioUser.getId(), waitingList.get(0).getUserId());
+    }
 }

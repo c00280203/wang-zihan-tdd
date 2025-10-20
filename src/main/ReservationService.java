@@ -67,5 +67,10 @@ public class ReservationService {
         .collect(Collectors.toList());
     }
 
+    public List<Reservation> getWaitingList(String id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getWaitingList'");
+    }
+
     
 }
