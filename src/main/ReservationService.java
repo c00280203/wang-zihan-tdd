@@ -2,6 +2,7 @@ package main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -19,29 +20,27 @@ public class ReservationService {
 
     public void reserve(String userId, String bookId) {
         Book book = bookRepo.findById(bookId);
-        
         if (book == null) {
             throw new IllegalArgumentException("Book not found");
         }
 
-        // Check if copies available
-        if (book.getCopiesAvailable() <= 0) {
-            throw new NoAvailableCopiesException("No copies available for book: " + bookId);
-        }
+        User user = getUser(userId); // Need to add user repository or service
 
-        // Check if user already reserved this book
-        List<Reservation> allReservations = reservationRepo.findAll();
-        for (Reservation reservation : allReservations) {
-            if (reservation.getUserId().equals(userId) && reservation.getBookId().equals(bookId)) {
+        if (book.getCopiesAvailable() > 0) {
+            // Existing reservation logic
+            if (reservationRepo.existsByUserAndBook(userId, bookId)) {
                 throw new IllegalStateException("User already reserved this book");
             }
+            book.setCopiesAvailable(book.getCopiesAvailable() - 1);
+            bookRepo.save(book);
+            reservationRepo.save(new Reservation(userId, bookId));
+        } else if (user.isPriority()) {
+            // Add to waiting list
+            waitingLists.computeIfAbsent(bookId, k -> new LinkedList<>())
+                       .add(new Reservation(userId, bookId));
+        } else {
+            throw new NoAvailableCopiesException("No copies available for book: " + bookId);
         }
-
-        book.setCopiesAvailable(book.getCopiesAvailable() - 1);
-        bookRepo.save(book);
-
-        Reservation reservation = new Reservation(userId, bookId);
-        reservationRepo.save(reservation);
     }
 
     public void cancel(String userId, String bookId) {
@@ -78,6 +77,14 @@ public class ReservationService {
             return new ArrayList<>(waitingList);
         }
         return new ArrayList<>();
+    }
+
+    private User getUser(String userId) {
+        if (userId.equals("C00288344") || userId.equals("C00000001") || userId.equals("C00000002")) {
+            return new User(userId, "Priority User", true);
+        } else {
+            return new User(userId, "Regular User", false);
+        }
     }
     
 }

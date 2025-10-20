@@ -160,7 +160,7 @@ public class ReservationServiceTest {
         // assertEquals(prioUser.getId(), waitingList.get(0).getUserId());
     }
 
-    @Test
+   @Test
     public void reserveBook_RegularUser_CannotReserve() {
         User regUser = new User("C00290305", "Robot", false);
         Book outBook = new Book("Book004", "How could be handsome", 0);
@@ -173,8 +173,10 @@ public class ReservationServiceTest {
     public void getWaitingList_PrioUserOrder() {
         User prioUser01 = new User("C00000001", "Filip Handsome", true);
         User prioUser02 = new User("C00000002", "I am handsome", true);
-        Book outBook = new Book("B00k005", "Penguin City Survival Guide", 0);
+        Book outBook = new Book("Book005", "Penguin City Survival Guide", 0);
 
+        bookRepo.save(outBook);
+        
         reservationService.reserve(prioUser01.getId(), outBook.getId());
         reservationService.reserve(prioUser02.getId(), outBook.getId());
 
