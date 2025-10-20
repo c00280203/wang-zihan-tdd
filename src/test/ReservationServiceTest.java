@@ -46,7 +46,7 @@ public class ReservationServiceTest {
 
     @Test
     public void reserveBook() {
-        setUp();
+        // setUp();
         reservationService.reserve(user.getId(), books.getId());
         Book book = bookRepo.findById(books.getId());
         assertEquals(2, book.getCopiesAvailable());
@@ -54,7 +54,7 @@ public class ReservationServiceTest {
 
     @Test
     public void reserveBook_BookNotFound_ThrowsException() {
-        setUp();
+        // setUp();
         // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> reservationService.reserve(user.getId(), "NON_EXISTENT"));
