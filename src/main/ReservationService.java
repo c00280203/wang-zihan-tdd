@@ -1,12 +1,17 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 public class ReservationService {
     private final IBookRepository bookRepo;
     private final IReservationRepository reservationRepo;
-
+    private final Map<String, Queue<Reservation>> waitingLists = new HashMap<>();
+    
     public ReservationService(IBookRepository bookRepo, IReservationRepository reservationRepo) {
         this.bookRepo = bookRepo;
         this.reservationRepo = reservationRepo;
@@ -67,10 +72,12 @@ public class ReservationService {
         .collect(Collectors.toList());
     }
 
-    public List<Reservation> getWaitingList(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getWaitingList'");
+    public List<Reservation> getWaitingList(String bookId) {
+        Queue<Reservation> waitingList = waitingLists.get(bookId);
+        if (waitingList != null) {
+            return new ArrayList<>(waitingList);
+        }
+        return new ArrayList<>();
     }
-
     
 }
