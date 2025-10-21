@@ -227,6 +227,9 @@ public class ReservationServiceTest {
         bookRepo.save(book);
 
         reservationService.reserve(reguUser.getId(), book.getId());
+        assertEquals(0, book.getCopiesAvailable());
+
+        reservationService.cancel(reguUser.getId(), book.getId());
 
         assertEquals(1, book.getCopiesAvailable());
         assertTrue(reservationService.getWaitingList(book.getId()).isEmpty());

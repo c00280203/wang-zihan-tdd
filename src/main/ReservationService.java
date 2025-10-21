@@ -27,7 +27,7 @@ public class ReservationService {
         
        User user = getUser(userId);
     
-        if (reservationRepo.existsByUserAndBook(userId, bookId)) {
+        if (reservationRepo.existsByUserAndBook(userId, bookId) || isUserInWaitingList(userId, bookId)) {
             throw new IllegalStateException("User already reserved this book");
         }
         
@@ -41,6 +41,14 @@ public class ReservationService {
         } else {
             throw new NoAvailableCopiesException("No copies available for book: " + bookId);
         }
+    }
+
+    private boolean isUserInWaitingList(String userId, String bookId) {
+        Queue<Reservation> waitingList = waitingLists.get(bookId);
+        if (waitingList != null) {
+            return waitingList.stream().anyMatch(reservation -> reservation.getUserId().equals(userId));
+        }
+        return false;
     }
 
     private void addToWaitingList(String userId, String bookId) {
