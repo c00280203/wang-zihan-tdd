@@ -43,6 +43,8 @@ public class ReservationServiceTest {
         bookRepo.save(stockBook);
 
         user02 = new User("C00280204", "Handsome Man");
+        reservationService.addUser(user);
+        reservationService.addUser(user02);
     }
 
     @Test
@@ -154,11 +156,9 @@ public class ReservationServiceTest {
         Book outOfStockBook = new Book("Book003", "How to get rich women's heart", 1);
         bookRepo.save(outOfStockBook);
 
-        reservationService.reserve(prioUser.getId(), outOfStockBook.getId());
+        reservationService.addUser(prioUser);
 
-        // List<Reservation> waitingList = reservationService.getWaitingList(outOfStockBook.getId());
-        // assertEquals(1, waitingList.size());
-        // assertEquals(prioUser.getId(), waitingList.get(0).getUserId());
+        reservationService.reserve(prioUser.getId(), outOfStockBook.getId());
     }
 
    @Test
@@ -166,6 +166,8 @@ public class ReservationServiceTest {
         User regUser = new User("C00290305", "Robot", false);
         Book outBook = new Book("Book004", "How could be handsome", 0);
         bookRepo.save(outBook);
+
+        reservationService.addUser(regUser);
 
         assertThrows(NoAvailableCopiesException.class, () -> reservationService.reserve(regUser.getId(), outBook.getId()));
     }
@@ -198,9 +200,9 @@ public class ReservationServiceTest {
         assertEquals(0, book.getCopiesAvailable());
 
         reservationService.reserve(prioUser.getId(), book.getId());
-        assertEquals(1,reservationService.getWaitingList(book.getId()).size());
+        assertEquals(1, reservationService.getWaitingList(book.getId()).size());
 
-        reservationService.reserve(prioUser.getId(), book.getId());
+        reservationService.cancel(reguUser.getId(), book.getId());
 
         assertEquals(0, reservationService.getWaitingList(book.getId()).size());
         assertTrue(reservationRepo.existsByUserAndBook(prioUser.getId(), book.getId()));

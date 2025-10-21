@@ -12,6 +12,7 @@ public class ReservationService {
     private final IBookRepository bookRepo;
     private final IReservationRepository reservationRepo;
     private final Map<String, Queue<Reservation>> waitingLists = new HashMap<>();
+    private final Map<String, User> users = new HashMap<>();
     
     public ReservationService(IBookRepository bookRepo, IReservationRepository reservationRepo) {
         this.bookRepo = bookRepo;
@@ -23,38 +24,56 @@ public class ReservationService {
         if (book == null) {
             throw new IllegalArgumentException("Book not found");
         }
-
-        User user = getUser(userId); // Need to add user repository or service
-
+        
+       User user = getUser(userId);
+    
+        if (reservationRepo.existsByUserAndBook(userId, bookId)) {
+            throw new IllegalStateException("User already reserved this book");
+        }
+        
         if (book.getCopiesAvailable() > 0) {
-            // Existing reservation logic
-            if (reservationRepo.existsByUserAndBook(userId, bookId)) {
-                throw new IllegalStateException("User already reserved this book");
-            }
             book.setCopiesAvailable(book.getCopiesAvailable() - 1);
             bookRepo.save(book);
             reservationRepo.save(new Reservation(userId, bookId));
         } else if (user.isPriority()) {
-            // Add to waiting list
             waitingLists.computeIfAbsent(bookId, k -> new LinkedList<>())
-                       .add(new Reservation(userId, bookId));
+                    .add(new Reservation(userId, bookId));
         } else {
             throw new NoAvailableCopiesException("No copies available for book: " + bookId);
         }
     }
 
+    private void addToWaitingList(String userId, String bookId) {
+        // TODO Auto-generated method stub
+        waitingLists.computeIfAbsent(bookId, k -> new LinkedList<>()).add(new Reservation(userId, bookId));
+    }
+    
+
     public void cancel(String userId, String bookId) {
         // TODO: Implement using TDD
-        Reservation reservation = new Reservation(userId, bookId);
-
-        if (!reservationRepo.findAll().contains(reservation)) {
+        if (!reservationRepo.existsByUserAndBook(userId, bookId)) {
             throw new IllegalArgumentException("Reservation not found");
         }
-        reservationRepo.delete(reservation);
+
+        reservationRepo.delete(userId, bookId);
 
         Book book = bookRepo.findById(bookId);
-        book.setCopiesAvailable(book.getCopiesAvailable() + 1);
-        bookRepo.save(book);
+        if (book == null) {
+            throw new IllegalArgumentException("Book not found");
+        }
+
+        Queue<Reservation> waitingList = waitingLists.get(bookId);
+        if (waitingList != null && !waitingList.isEmpty()) {
+            Reservation nextReservation = waitingList.poll();
+            reservationRepo.save(nextReservation);
+        } else {
+            book.setCopiesAvailable(book.getCopiesAvailable() + 1);
+            bookRepo.save(book);
+        }
+
+        if (waitingList != null && waitingList.isEmpty()) {
+            waitingLists.remove(bookId);
+        }
     }
 
     public List<Reservation> listReservations(String userId) {
@@ -72,19 +91,19 @@ public class ReservationService {
     }
 
     public List<Reservation> getWaitingList(String bookId) {
-        Queue<Reservation> waitingList = waitingLists.get(bookId);
-        if (waitingList != null) {
-            return new ArrayList<>(waitingList);
-        }
-        return new ArrayList<>();
+        Queue<Reservation> queue = waitingLists.get(bookId);
+        return queue != null ? new ArrayList<>(queue) : new ArrayList<>();
+    }
+
+    public void addUser(User user) {
+        users.put(user.getId(), user);
     }
 
     private User getUser(String userId) {
-        if (userId.equals("C00288344") || userId.equals("C00000001") || userId.equals("C00000002")) {
-            return new User(userId, "Priority User", true);
-        } else {
-            return new User(userId, "Regular User", false);
+        User user = users.get(userId);
+        if (user == null) {
+            return new User(userId, "Default User", true);
         }
+        return user;
     }
-    
 }

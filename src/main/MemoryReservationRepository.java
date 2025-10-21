@@ -35,6 +35,6 @@ public class MemoryReservationRepository implements IReservationRepository {
     @Override
     public void delete(String bookId, String userId) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        reservations.removeIf(r -> r.getUserId().equals(userId) && r.getBookId().equals(bookId));
     }
 }
