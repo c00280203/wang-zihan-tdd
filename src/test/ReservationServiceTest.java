@@ -208,4 +208,27 @@ public class ReservationServiceTest {
         assertTrue(reservationRepo.existsByUserAndBook(prioUser.getId(), book.getId()));
         assertEquals(0, book.getCopiesAvailable());
     }
+
+    @Test
+    public void reserveBook_PriorityUser_CannotReserveSameBook() {
+        User prioUser = new User("C00000006", "Empire", true);
+        Book outBook = new Book("Book010", "", 0);
+        bookRepo.save(outBook);
+
+        reservationService.reserve(prioUser.getId(), outBook.getId());
+
+        assertThrows(IllegalStateException.class, () -> reservationService.reserve(prioUser.getId(), outBook.getId()));
+    }
+
+    @Test
+    public void cancelReservation_WithEmptyWaitingList() {
+        User reguUser = new User("C00000009", "Regu User", false);
+        Book book = new Book("Book011", "Sample", 1);
+        bookRepo.save(book);
+
+        reservationService.reserve(reguUser.getId(), book.getId());
+
+        assertEquals(1, book.getCopiesAvailable());
+        assertTrue(reservationService.getWaitingList(book.getId()).isEmpty());
+    }
 }
