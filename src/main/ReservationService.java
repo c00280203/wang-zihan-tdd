@@ -21,12 +21,12 @@ public class ReservationService {
 
     public void reserve(String userId, String bookId) {
         Book book = bookRepo.findById(bookId);
+        User user = getUser(userId);
+
         if (book == null) {
             throw new IllegalArgumentException("Book not found");
         }
-        
-       User user = getUser(userId);
-    
+       
         if (reservationRepo.existsByUserAndBook(userId, bookId) || isUserInWaitingList(userId, bookId)) {
             throw new IllegalStateException("User already reserved this book");
         }
